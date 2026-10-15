@@ -168,7 +168,12 @@ function Settings() {
         <div className="min-w-0">
           {sections.map(({ id, label, description }) => (
             // Keep panels mounted so changing sections preserves unsaved form drafts.
-            <section key={id} hidden={active !== id} aria-labelledby={`settings-heading-${id}`}>
+            <section
+              key={id}
+              hidden={active !== id}
+              data-settings-section={id}
+              aria-labelledby={`settings-heading-${id}`}
+            >
               <div className="mb-5 space-y-1.5">
                 <h2 id={`settings-heading-${id}`} className="text-xl font-semibold tracking-tight">
                   {label}
