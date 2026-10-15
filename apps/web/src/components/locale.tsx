@@ -5,6 +5,7 @@ import { Languages } from "lucide-react";
 import { LOCALE_KEY, localePreference, localeTag, type Locale } from "@/lib/locale";
 import { fill, messagesFor, type Messages } from "@/lib/messages";
 import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 interface LocaleValue {
   locale: Locale;
@@ -98,31 +99,35 @@ export function LanguageToggle({ iconOnly = false }: { iconOnly?: boolean }) {
 export function LanguageSettings() {
   const { locale, text, setLocale } = useI18n();
   return (
-    <div className="space-y-2 rounded-lg border p-4">
-      <div className="space-y-1">
-        <h3 className="text-sm font-medium">{text.language.title}</h3>
+    <Card id="interface-language">
+      <CardHeader>
+        <CardTitle className="text-sm normal-case tracking-normal text-card-foreground">
+          {text.language.title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">{text.language.description}</p>
-      </div>
-      <div className="flex flex-wrap gap-2" role="group" aria-label={text.language.label}>
-        {(
-          [
-            ["en", text.language.english],
-            ["zh", text.language.chinese],
-          ] as const
-        ).map(([id, label]) => (
-          <Button
-            key={id}
-            type="button"
-            size="sm"
-            variant={locale === id ? "secondary" : "outline"}
-            aria-pressed={locale === id}
-            onClick={() => setLocale(id)}
-          >
-            {label}
-          </Button>
-        ))}
-      </div>
-    </div>
+        <div className="grid gap-2 sm:grid-cols-2" role="group" aria-label={text.language.label}>
+          {(
+            [
+              ["en", text.language.english],
+              ["zh", text.language.chinese],
+            ] as const
+          ).map(([id, label]) => (
+            <Button
+              key={id}
+              type="button"
+              variant={locale === id ? "secondary" : "outline"}
+              className="h-11 justify-start px-3"
+              aria-pressed={locale === id}
+              onClick={() => setLocale(id)}
+            >
+              {label}
+            </Button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

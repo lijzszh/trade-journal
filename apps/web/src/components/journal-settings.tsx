@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { fill } from "@/lib/messages";
 import { postJson, useApi } from "@/lib/use-api";
+import { useI18n } from "./locale";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Label } from "./ui/label";
@@ -14,6 +16,7 @@ interface SettingsPayload {
 }
 
 export function TimeZoneSettings() {
+  const { text } = useI18n();
   const { data, error, refresh } = useApi<SettingsPayload>("/api/settings");
   const [timeZone, setTimeZone] = useState("");
   const [importTimeZone, setImportTimeZone] = useState("");
@@ -37,7 +40,7 @@ export function TimeZoneSettings() {
       setSaved(true);
       refresh();
     } catch (cause) {
-      setFailure(cause instanceof Error ? cause.message : "Save failed");
+      setFailure(cause instanceof Error ? cause.message : text.settings.saveFailed);
     } finally {
       setBusy(false);
     }
@@ -46,17 +49,17 @@ export function TimeZoneSettings() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Timezones</CardTitle>
+        <CardTitle>{text.settings.timezonesTitle}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <fieldset disabled={busy || !data} className="space-y-4">
           <div>
             <Label htmlFor="display-timezone" className="mb-1 block text-xs text-muted-foreground">
-              Display timezone (IANA)
+              {text.settings.displayTimezone}
             </Label>
             <TimeZonePicker
               id="display-timezone"
-              label="Display timezone"
+              label={text.settings.displayTimezoneLabel}
               value={timeZone}
               onValueChange={(value) => {
                 setTimeZone(value);
@@ -65,7 +68,7 @@ export function TimeZoneSettings() {
               disabled={busy || !data}
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Trade times, calendars, journal days, and analytics use this timezone.
+              {text.settings.displayTimezoneHelp}
             </p>
             <button
               className="mt-1 text-xs text-muted-foreground underline"
@@ -74,16 +77,18 @@ export function TimeZoneSettings() {
                 setSaved(false);
               }}
             >
-              Use this device's timezone ({Intl.DateTimeFormat().resolvedOptions().timeZone})
+              {fill(text.settings.useDeviceTimezone, {
+                zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+              })}
             </button>
           </div>
           <div>
             <Label htmlFor="import-timezone" className="mb-1 block text-xs text-muted-foreground">
-              Default import timezone (IANA)
+              {text.settings.importTimezone}
             </Label>
             <TimeZonePicker
               id="import-timezone"
-              label="Default import timezone"
+              label={text.settings.importTimezoneLabel}
               value={importTimeZone}
               onValueChange={(value) => {
                 setImportTimeZone(value);
@@ -91,13 +96,11 @@ export function TimeZoneSettings() {
               }}
               disabled={busy || !data}
             />
-            <p className="mt-1 text-xs text-muted-foreground">
-              Used for timestamps without an offset in file imports and IBKR broker sync. You can
-              override it for each file. Existing trades are not changed; correcting an IBKR
-              account's timezone requires a separate account for recovery.
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{text.settings.importTimezoneHelp}</p>
           </div>
-          <Button onClick={save}>{busy ? "Saving…" : "Save timezones"}</Button>
+          <Button onClick={save}>
+            {busy ? text.settings.savingTimezones : text.settings.saveTimezones}
+          </Button>
         </fieldset>
         {(failure || error) && (
           <p role="alert" className="text-sm text-destructive">
@@ -106,7 +109,7 @@ export function TimeZoneSettings() {
         )}
         {saved && (
           <p role="status" className="text-sm text-muted-foreground">
-            Timezones saved.
+            {text.settings.timezonesSaved}
           </p>
         )}
       </CardContent>
